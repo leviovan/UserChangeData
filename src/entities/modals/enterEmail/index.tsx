@@ -1,3 +1,4 @@
+import { LoadingButton } from '@mui/lab'
 import {
   Button,
   Dialog,
@@ -11,11 +12,12 @@ import React from 'react'
 
 interface IModal {
   isOpen: boolean
+  pending: boolean
   onClose: () => void
   onSubmit: (arg0: string) => void
 }
 
-const EnterEmailModal = ({ isOpen, onClose, onSubmit }: IModal) => {
+const EnterEmailModal = ({ isOpen, onClose, onSubmit, pending }: IModal) => {
   return (
     <Dialog
       open={isOpen}
@@ -27,7 +29,6 @@ const EnterEmailModal = ({ isOpen, onClose, onSubmit }: IModal) => {
           const formJson = Object.fromEntries((formData as any).entries())
           const email = formJson.email
           onSubmit(email)
-          onClose()
         },
       }}
     >
@@ -51,7 +52,9 @@ const EnterEmailModal = ({ isOpen, onClose, onSubmit }: IModal) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button type="submit">Subscribe</Button>
+        <LoadingButton type="submit" loading={pending}>
+          Subscribe
+        </LoadingButton>
       </DialogActions>
     </Dialog>
   )

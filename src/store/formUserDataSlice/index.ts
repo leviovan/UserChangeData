@@ -33,9 +33,7 @@ const initialState: IFormUserData = {
 export const sendEmail = createAsyncThunk(
   'formUserData/sendEmailTarget',
   async (emailTarget: string,thunkApi) => {
-
     const newData=thunkApi.getState()!.formUserData!.formUserData
-    
     const response = await emailjs.send('service_n5fa0ph','template_6iw6s54',
       {targetEmail:emailTarget,...newData},'sto0Bs6RQmNAGUw8L')
 
@@ -54,10 +52,15 @@ export const formUserDataSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(sendEmail.fulfilled, (state, { payload }) => {
+      state.isLoadingSendEmail=false
       console.log("yes")
     })
+     builder.addCase(sendEmail.pending, (state, action) => {
+       state.isLoadingSendEmail=true
+    })
     builder.addCase(sendEmail.rejected, (state, action) => {
-      console.log("no",action.error)
+        state.error=action.error.message!
+       state.isLoadingSendEmail=false
     })
   },
 })

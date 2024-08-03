@@ -1,4 +1,4 @@
-import { Button, PortalProps } from '@mui/material'
+import { Button, Link, PortalProps } from '@mui/material'
 import { Input } from '../../shared/ui/input'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { UserData } from '../../entities/formChangeData/type'
@@ -13,12 +13,16 @@ import EnterEmailModal from '../../entities/modals/enterEmail'
 
 export let FormChangeData = () => {
   const dispatch = useDispatch<AppDispatch>()
+  const isLoadingSendEmail = useSelector(
+    (s: RootState) => s.formUserData.isLoadingSendEmail,
+  )
   const [openModal, setOpenModal] = useState(false)
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
+    reset,
   } = useForm<UserData>({
     resolver: yupResolver(schemaForm),
   })
@@ -36,14 +40,14 @@ export let FormChangeData = () => {
         </h2>
         <p>
           Please read our{' '}
-          <a className="text-blue-700" href="www.google.com">
+          <a className="text-blue-700" href="https://www.google.ru/">
             terms of use
           </a>{' '}
           to be informed how we manage your private data.
         </p>
       </div>
-      <div className=" flex flex-col pt-5 gap-7">
-        <div className="flex gap-5 ">
+      <div className=" flex flex-col pt-5 gap-7 ">
+        <div className="flex gap-5 max-sm:flex-col ">
           <Input
             error={errors['firstName']}
             label="First Name"
@@ -61,7 +65,7 @@ export let FormChangeData = () => {
         </div>
         <Input textarea label="Bio" register={register('bio')} />
         <div className="flex flex-wrap gap-5  border-t-2">
-          <div className=" flex w-full py-5 gap-5">
+          <div className=" flex w-full py-5 gap-5 max-sm:flex-col">
             <Input
               error={errors['country']}
               label="Country"
@@ -84,11 +88,10 @@ export let FormChangeData = () => {
             required={true}
             register={register('address')}
           />
-
-          <div className="flex justify-between w-full mt-9">
+          <div className="flex justify-between w-full gap-2 mt-9 max-sm:flex-col">
             <p>
               You may also consider to update your{' '}
-              <a className="text-blue-700" href="www.google.com">
+              <a className="text-blue-700" href="https://www.google.ru/">
                 billing information.
               </a>
             </p>{' '}
@@ -99,7 +102,12 @@ export let FormChangeData = () => {
         </div>
       </div>
       <EnterEmailModal
-        onSubmit={(email: string) => dispatch(sendEmail(email))}
+        pending={isLoadingSendEmail}
+        onSubmit={(email: string) => {
+          dispatch(sendEmail(email)).then(() => {
+            setOpenModal(false), reset()
+          })
+        }}
         isOpen={openModal}
         onClose={() => setOpenModal(false)}
       />
