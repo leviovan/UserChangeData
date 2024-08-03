@@ -21,8 +21,6 @@ export const Input = ({
   className,
   error,
 }: IInput) => {
-  console.log(error)
-
   return (
     <div className={className}>
       <label className="flex flex-col gap-4">

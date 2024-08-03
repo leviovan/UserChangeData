@@ -2,44 +2,31 @@ import { Button, PortalProps } from '@mui/material'
 import { Input } from '../../shared/ui/input'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { UserData } from '../../entities/formChangeData/type'
-import * as yup from 'yup'
+
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useDispatch, useSelector } from 'react-redux'
+import { schemaForm } from '../../shared/utilities/validation'
+import { AppDispatch, RootState } from '../../store'
+import { sendEmail, updateFormData } from '../../store/formUserDataSlice'
+import { useState } from 'react'
+import EnterEmailModal from '../../entities/modals/enterEmail'
 
 export let FormChangeData = () => {
-  const schema = yup
-    .object({
-      firstName: yup.string().required().min(5, 'The string must be larger'),
-      email: yup
-        .string()
-        .trim()
-        .email('Invalid email')
-        .required()
-        .min(5, 'The string must be larger'),
-      bio: yup.string().trim().notRequired(),
-      country: yup
-        .string()
-        .trim()
-        .required()
-        .min(5, 'Must be exactly 5 digits'),
-      city: yup.string().trim().required().min(3, 'The string must be larger'),
-      address: yup
-        .string()
-        .trim()
-        .required()
-        .min(5, 'The string must be larger'),
-    })
-    .required()
-
+  const dispatch = useDispatch<AppDispatch>()
+  const [openModal, setOpenModal] = useState(false)
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm<UserData>({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(schemaForm),
   })
 
-  const onSubmit: SubmitHandler<UserData> = (data) => console.log(errors)
+  const onSubmit: SubmitHandler<UserData> = (data) => {
+    dispatch(updateFormData(data))
+    setOpenModal(true)
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="w-full p-8  ">
@@ -111,6 +98,11 @@ export let FormChangeData = () => {
           </div>
         </div>
       </div>
+      <EnterEmailModal
+        onSubmit={(email: string) => dispatch(sendEmail(email))}
+        isOpen={openModal}
+        onClose={() => setOpenModal(false)}
+      />
     </form>
   )
 }

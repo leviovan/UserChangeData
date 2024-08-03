@@ -1,4 +1,3 @@
-import React from 'react'
 import { FormChangeData } from '../../widgets/formChangeData'
 
 const Main = () => {
