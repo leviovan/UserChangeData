@@ -2,7 +2,7 @@ import * as yup from 'yup'
 
 export const schemaForm = yup
   .object({
-    firstName: yup.string().required().min(5, 'The string must be larger'),
+    firstName: yup.string().required().min(3, 'The string must be larger'),
     email: yup
       .string()
       .trim()
